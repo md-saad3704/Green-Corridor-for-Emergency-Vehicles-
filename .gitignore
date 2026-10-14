@@ -1,0 +1,34 @@
+
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Python cache and test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Generated simulation results and logs
+results/*
+!results/.gitkeep
+*.log
+
+# Generated model artifacts
+models/*.pkl
+models/*.joblib
+models/*.pt
+models/*.onnx
