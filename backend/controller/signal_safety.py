@@ -18,12 +18,14 @@ def validate_signal_state(signal_state, expected_length):
     return True, "Signal-state structure is valid."
 
 
+
 def validate_no_conflicting_greens(signal_state, conflict_groups):
     """
     Reject signal states that activate conflicting green signal groups.
 
-    conflict_groups is a collection of sets or tuples. Each group contains
-    signal-state indices that must not be green simultaneously.
+    Each conflict group contains signal-state indices that must not
+    display green simultaneously. Every index must be an integer
+    within the signal-state string.
     """
     if not isinstance(signal_state, str):
         return False, "Signal state must be a string."
@@ -35,11 +37,22 @@ def validate_no_conflicting_greens(signal_state, conflict_groups):
         return False, "Signal state contains an unsupported character."
 
     for group in conflict_groups:
+        for index in group:
+            if (
+                not isinstance(index, int)
+                or isinstance(index, bool)
+                or index < 0
+                or index >= len(signal_state)
+            ):
+                return False, (
+                    f"Invalid conflict index {index!r}; "
+                    f"valid indices are 0 to {len(signal_state) - 1}."
+                )
+
         green_indices = [
             index
             for index in group
-            if index < len(signal_state)
-            and signal_state[index] in {"g", "G"}
+            if signal_state[index] in {"g", "G"}
         ]
 
         if len(green_indices) > 1:

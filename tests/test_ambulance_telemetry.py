@@ -1,5 +1,6 @@
 
 import traci
+from backend.eta.service import estimate_ambulance_eta
 
 from backend.config import SUMO_BINARY
 from backend.telemetry.collector import collect_telemetry
@@ -48,6 +49,31 @@ def test_ambulance_distance_matches_next_signal_measurement():
             ambulance["distance_to_intersection_m"]
             == expected_distance
         )
+
+    finally:
+        traci.close()
+
+
+def test_ambulance_eta_is_calculated_from_live_telemetry():
+    traci.start([SUMO_BINARY, "-c", CONFIG_FILE])
+
+    try:
+        for _ in range(10):
+            traci.simulationStep()
+
+        snapshot = collect_telemetry()
+        ambulance = snapshot["ambulance"]
+
+        assert ambulance is not None
+        assert ambulance["distance_to_intersection_m"] is not None
+
+        eta_result = estimate_ambulance_eta(ambulance)
+
+        assert eta_result["status"] == "estimated"
+        assert eta_result["eta_seconds"] is not None
+        assert eta_result["eta_seconds"] >= 0
+        assert eta_result["distance_m"] >= 0
+        assert eta_result["speed_mps"] >= 0
 
     finally:
         traci.close()

@@ -64,3 +64,33 @@ def test_invalid_character_is_rejected_by_conflict_validator():
         conflict_groups=[{0, 1}],
     )
     assert result is False
+
+
+
+def test_conflict_group_with_out_of_range_index_is_rejected():
+    result, message = validate_no_conflicting_greens(
+        "Grrr",
+        conflict_groups=[{0, 5}],
+    )
+
+    assert result is False
+    assert "index" in message.lower()
+
+
+def test_conflict_group_with_negative_index_is_rejected():
+    result, message = validate_no_conflicting_greens(
+        "Grrr",
+        conflict_groups=[{-1, 1}],
+    )
+
+    assert result is False
+    assert "index" in message.lower()
+
+
+def test_empty_conflict_group_is_allowed():
+    result, message = validate_no_conflicting_greens(
+        "Grrr",
+        conflict_groups=[],
+    )
+
+    assert result is True
